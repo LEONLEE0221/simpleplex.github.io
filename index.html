@@ -14,13 +14,14 @@
         .bg-blue-500 { background-color: #ea580c; } /* Lighter shade for buttons */
         .hover:bg-blue-700 { background-color: #c2410c; } /* Darker shade on hover */
         .bg-blue-100 { background-color: #ffedd5; } /* Light orange for table header */
-        .small-text { font-size: 0.75rem; } /* Smaller font size for table headers */
+        .small-text { font-size: 0.65rem; } /* Even smaller font size for table headers and options */
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto p-6 max-w-4xl">
         <h1 class="text-3xl font-bold text-center text-orange-600 mb-6">Simple Plex Services Sample Form</h1>
-        <form action="mailto:support@medikonia.com?subject=" class="bg-white p-6 rounded-lg shadow-md" onsubmit="setSubject(event)">
+        <form id="sampleForm" class="bg-white p-6 rounded-lg shadow-md">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                     <label for="service_id" class="block text-sm font-medium text-gray-700">Service ID</label>
@@ -113,7 +114,7 @@
                         <tr>
                             <td class="py-2 px-4 border"><input type="text" name="Target1" class="w-full border rounded p-1"></td>
                             <td class="py-2 px-4 border">
-                                <select name="Species1" class="w-full border rounded p-1 text-sm">
+                                <select name="Species1" class="w-full border rounded p-1 text-sm small-text">
                                     <option value="">Select Species</option>
                                     <option value="Human">Human</option>
                                     <option value="Mouse">Mouse</option>
@@ -124,7 +125,7 @@
                                 </select>
                             </td>
                             <td class="py-2 px-4 border">
-                                <select name="Type1" class="w-full border rounded p-1 text-sm" onchange="toggleOtherInput(this, 'type_other1')">
+                                <select name="Type1" class="w-full border rounded p-1 text-sm small-text" onchange="toggleOtherInput(this, 'type_other1')">
                                     <option value="">Select Type</option>
                                     <option value="Plasma">Plasma</option>
                                     <option value="Serum">Serum</option>
@@ -190,7 +191,7 @@
                 </div>
             </div>
             <div class="text-center mt-6">
-                <button type="submit" class="bg-orange-600 text-white font-semibold py-2 px-4 rounded hover:bg-orange-700">Send</button>
+                <button type="button" onclick="saveAsPDF()" class="bg-orange-600 text-white font-semibold py-2 px-4 rounded hover:bg-orange-700">Save</button>
             </div>
         </form>
         <footer class="mt-8 text-center text-gray-600">
@@ -222,7 +223,7 @@
             newRow.innerHTML = `
                 <td class="py-2 px-4 border"><input type="text" name="Target${rowCount}" class="w-full border rounded p-1"></td>
                 <td class="py-2 px-4 border">
-                    <select name="Species${rowCount}" class="w-full border rounded p-1 text-sm">
+                    <select name="Species${rowCount}" class="w-full border rounded p-1 text-sm small-text">
                         <option value="">Select Species</option>
                         <option value="Human">Human</option>
                         <option value="Mouse">Mouse</option>
@@ -233,7 +234,7 @@
                     </select>
                 </td>
                 <td class="py-2 px-4 border">
-                    <select name="Type${rowCount}" class="w-full border rounded p-1 text-sm" onchange="toggleOtherInput(this, 'type_other${rowCount}')">
+                    <select name="Type${rowCount}" class="w-full border rounded p-1 text-sm small-text" onchange="toggleOtherInput(this, 'type_other${rowCount}')">
                         <option value="">Select Type</option>
                         <option value="Plasma">Plasma</option>
                         <option value="Serum">Serum</option>
@@ -271,14 +272,11 @@
             rowCount = rows.length;
         }
 
-        function setSubject(event) {
+        function saveAsPDF() {
             const serviceId = document.getElementById('service_id').value;
-            if (serviceId) {
-                const subject = encodeURIComponent(`${serviceId} Services`);
-                window.location.href = `mailto:support@medikonia.com?subject=${subject}`;
-            }
-            event.preventDefault();
-            document.querySelector('form').submit();
+            const filename = serviceId ? `${serviceId}_Sample_Form_${new Date().toLocaleString('en-US', { timeZone: 'Asia/Hong_Kong' }).replace(/[:\/]/g, '-')}.pdf` : `Sample_Form_${new Date().toLocaleString('en-US', { timeZone: 'Asia/Hong_Kong' }).replace(/[:\/]/g, '-')}.pdf`;
+            const element = document.getElementById('sampleForm');
+            html2pdf().from(element).save(filename);
         }
     </script>
 </body>
